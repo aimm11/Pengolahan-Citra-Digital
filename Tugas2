@@ -1,0 +1,69 @@
+import imageio.v2 as image  # Pastikan menggunakan imageio versi 2
+import numpy as np
+
+# Path gambar yang akan diproses
+path = "/Users/macos/Tugas Semester 5/Pengolahan Citra Digital/pemandangan.jpeg"
+
+# Membaca gambar
+my_image = image.imread(path)
+
+# Mengecek dimensi gambar
+if len(my_image.shape) < 3:
+    print("Gambar input harus RGB")
+    exit()
+
+# Mengambil saluran warna
+red = my_image[:, :, 0]
+green = my_image[:, :, 1]
+blue = my_image[:, :, 2]
+
+# Menghitung gambar abu-abu
+gray = (red + green + blue) / 3
+
+# Membuat gambar untuk setiap saluran warna
+image_red = np.zeros_like(my_image)
+image_red[:, :, 0] = red
+
+image_green = np.zeros_like(my_image)
+image_green[:, :, 1] = green
+
+image_blue = np.zeros_like(my_image)
+image_blue[:, :, 2] = blue
+
+# Membuat gambar abu-abu
+image_gray = np.zeros_like(my_image)
+image_gray[:, :, 0] = gray
+image_gray[:, :, 1] = gray
+image_gray[:, :, 2] = gray
+
+# Threshold untuk konversi biner
+threshold_bw = 128
+image_bw = np.zeros_like(my_image)
+image_bw[gray > threshold_bw] = 255  # Pixel putih
+image_bw[gray <= threshold_bw] = 0    # Pixel hitam
+
+# Threshold warna untuk konversi warna threshold
+lower_threshold = 100  # Threshold rendah
+upper_threshold = 200  # Threshold tinggi
+
+# Gambar dengan warna threshold
+image_colored_threshold = np.zeros_like(my_image)
+image_colored_threshold[(red > lower_threshold) & (red < upper_threshold), 0] = 255  # Merah
+image_colored_threshold[(green > lower_threshold) & (green < upper_threshold), 1] = 255  # Hijau
+image_colored_threshold[(blue > lower_threshold) & (blue < upper_threshold), 2] = 255  # Biru
+
+# Mengkonversi ke tipe uint8
+image_gray = image_gray.astype("uint8")
+image_bw = image_bw.astype("uint8")
+image_colored_threshold = image_colored_threshold.astype("uint8")
+
+# Menyimpan gambar hasil
+image.imwrite("/Users/macos/Tugas Semester 5/Pengolahan Citra Digital/pemandangan1.jpeg", image_red)
+image.imwrite("/Users/macos/Tugas Semester 5/Pengolahan Citra Digital/pemandangan2.jpeg", image_green)
+image.imwrite("/Users/macos/Tugas Semester 5/Pengolahan Citra Digital/pemandangan3.jpeg", image_blue)
+image.imwrite("/Users/macos/Tugas Semester 5/Pengolahan Citra Digital/pemandangan4.jpeg", image_gray)
+image.imwrite("/Users/macos/Tugas Semester 5/Pengolahan Citra Digital/pemandangan5.jpeg", image_bw)
+image.imwrite("/Users/macos/Tugas Semester 5/Pengolahan Citra Digital/pemandangan6.jpeg", image_colored_threshold)
+
+print(f"Dimensi Gambar Adalah {my_image.shape}")
+print("Proses Selesai!")
